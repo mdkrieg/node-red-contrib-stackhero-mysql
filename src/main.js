@@ -111,6 +111,7 @@ module.exports = (RED) => {
       }
       else if (code === 'error') {
         this.status({ fill: 'red', shape: 'ring', text: info });
+        this.error(info, {}); // empty obj makes error catchable by "catch" nodes
       }
       else if (code === 'queryDone') {
         this.status({ fill: 'blue', shape: 'dot', text: 'query done' });
@@ -124,13 +125,13 @@ module.exports = (RED) => {
 
     this.on('input', async msg => {
       if (typeof(msg.topic) !== 'string' || !msg.topic) {
-        this.error('msg.topic should be a string containing the SQL query.');
+        this.error('msg.topic should be a string containing the SQL query.', msg);
         return;
       }
 
       const isAnObject = value => value === Object(value) && !Array.isArray(value);
       if (msg.payload !== undefined && !isAnObject(msg.payload)) {
-        this.error('msg.payload should be an object containing the query arguments.');
+        this.error('msg.payload should be an object containing the query arguments.', msg);
         return;
       }
 
